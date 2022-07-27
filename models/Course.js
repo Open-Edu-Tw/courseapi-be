@@ -9,6 +9,6 @@ const CourseSchema = new Schema({
     providerInstitution: String,
     source: String,
 });
-const Course = mongoose.model('course', CourseSchema);
+const Course = mongoose.model('CourseSchema', CourseSchema, "course");
 
 export default Course;
