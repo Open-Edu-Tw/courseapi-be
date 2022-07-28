@@ -11,7 +11,6 @@ import Course from './models/course.js';
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || '4000';
 
 app.get('/course/:id', async (request, response) => {
 	const {id} = request.params;
@@ -54,17 +53,29 @@ app.get('/course/search', async (request, response) => {
 	response.send({data: matchedResult.toJSON()});
 });
 
-// Run test
-app.listen(port, () => console.log(`API started on port ${port}!`));
+async function main() {
+	const dbHost = process.env.MONGO_URL;
+	const port = process.env.PORT || '4000';
 
-// Connect to MongoDB
-mongoose
-	.connect(process.env.MONGO_URL, {
-		useNewUrlParser: true,
-		useUnifiedTopology: true,
-	})
-	.then(() => console.log('MongoDB connection has been created.'));
+	if (!dbHost) {
+		throw new Error('You must specify the MONGO_URL.');
+	}
 
-const db = mongoose.connection;
-db.on('error', (error) => console.log(error));
-db.once('open', async () => {});
+	// Connect to MongoDB
+	mongoose
+		.connect(dbHost, {
+			useNewUrlParser: true,
+			useUnifiedTopology: true,
+		})
+		.then(() => console.log('MongoDB connection has been created.'));
+
+	const db = mongoose.connection;
+	db.on('error', (error) => console.log(error));
+
+	// Don't start Express before database started.
+	db.once('open', () => {
+		app.listen(port, () => console.log(`API started on port ${port}!`));
+	});
+}
+
+main();
