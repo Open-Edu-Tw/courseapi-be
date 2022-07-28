@@ -12,6 +12,37 @@ dotenv.config();
 
 const app = express();
 
+app.get('/course', async (request, response) => {
+	/**
+	 * @type {{ [key: string]: { $regex: RegExp }}}
+	 */
+	const matchers = {};
+
+	// 從 request.query 取出 query parameter，
+	// 然後建構不分大小寫的 Regex 的查詢請求。
+	const addMatcher = (queryName) => {
+		if (queryName) {
+			matchers[queryName] = {
+				$regex: new RegExp(request.query[queryName], 'i'),
+			};
+		}
+	};
+
+	for (const queryName of ['name', 'url', 'description', 'source']) {
+		addMatcher(queryName);
+	}
+
+	const matchedResult = await Course.find(matchers);
+
+	if (matchedResult?.length > 0) {
+		response.status(200);
+	} else {
+		response.status(400);
+	}
+
+	response.send({data: matchedResult.toJSON()});
+});
+
 app.get('/course/:id', async (request, response) => {
 	const {id} = request.params;
 
@@ -27,30 +58,6 @@ app.get('/course/:id', async (request, response) => {
 
 	// 無論有沒有內容都回傳 data。
 	response.send({data: document?.toJSON()});
-});
-
-app.get('/course/search', async (request, response) => {
-	const {keyword} = request.query;
-
-	if (!keyword) {
-		response.status(400).send({error: '缺少必要的參數 “keyword”。'});
-	}
-
-	const keywordMatcher = new RegExp(keyword, 'i');
-
-	const matchedResult = await Course.find({
-		name: {
-			$regex: keywordMatcher,
-		},
-	});
-
-	if (matchedResult?.length > 0) {
-		response.status(200);
-	} else {
-		response.status(400);
-	}
-
-	response.send({data: matchedResult.toJSON()});
 });
 
 async function main() {
