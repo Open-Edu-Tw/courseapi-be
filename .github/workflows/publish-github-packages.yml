@@ -43,5 +43,5 @@ jobs:
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ env.GITHUB_REF_SLUG }}
+          tags: ${{ env.REGISTRY }}/${{ github.actor }}/${{ env.GITHUB_REF_SLUG }}
           labels: ${{ steps.meta.outputs.labels }}
