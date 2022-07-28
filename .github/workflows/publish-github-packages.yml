@@ -24,6 +24,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+      
       # Login against a Docker registry except on PR
       # https://github.com/docker/login-action
       - name: Log into registry ${{ env.REGISTRY }}
@@ -40,5 +45,5 @@ jobs:
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${GITHUB_REF##*/}
+          tags: ${{ steps.extract_branch.outputs.branch }}
           labels: ${{ steps.meta.outputs.labels }}
