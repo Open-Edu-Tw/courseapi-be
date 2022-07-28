@@ -3,5 +3,11 @@
 # and commit this file to your remote git repository to share the goodness with others.
 
 tasks:
-  - init: yarn install
-  - command: yarn server
+    - init: yarn install
+    - command: yarn server
+
+vscode:
+    extensions:
+        - 'EditorConfig.EditorConfig'
+        - 'esbenp.prettier-vscode'
+        - 'samverschueren.linter-xo'
