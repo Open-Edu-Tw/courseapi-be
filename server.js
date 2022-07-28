@@ -34,13 +34,9 @@ app.get('/course', async (request, response) => {
 
 	const matchedResult = await Course.find(matchers);
 
-	if (matchedResult?.length > 0) {
-		response.status(200);
-	} else {
-		response.status(400);
-	}
+	response.status(matchedResult?.length > 0 ? 200 : 400);
 
-	response.send({data: matchedResult.toJSON()});
+	response.send({data: matchedResult});
 });
 
 app.get('/course/:id', async (request, response) => {
@@ -48,16 +44,10 @@ app.get('/course/:id', async (request, response) => {
 
 	const document = await Course.findById(id);
 
-	if (document) {
-		// 如果有內容，則回傳 200。
-		response.status(200);
-	} else {
-		// 如果沒有內容，則回傳 404。
-		response.status(404);
-	}
+	response.status(document ? 200 : 404);
 
 	// 無論有沒有內容都回傳 data。
-	response.send({data: document?.toJSON()});
+	response.send({data: document});
 });
 
 async function main() {
