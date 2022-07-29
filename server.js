@@ -34,7 +34,11 @@ app.get('/course', async (request, response) => {
 
 	const matchedResult = await Course.find(matchers);
 
-	response.status(matchedResult?.length > 0 ? 200 : 400);
+	if (matchedResult?.length > 0) {
+		response.status(200);
+	} else {
+		response.status(400);
+	}
 
 	response.send({data: matchedResult});
 });
@@ -44,15 +48,26 @@ app.get('/course/:id', async (request, response) => {
 
 	const document = await Course.findById(id);
 
-	response.status(document ? 200 : 404);
+	if (document) {
+		// 如果有內容，則回傳 200。
+		response.status(200);
+	} else {
+		// 如果沒有內容，則回傳 404。
+		response.status(404);
+	}
 
 	// 無論有沒有內容都回傳 data。
 	response.send({data: document});
 });
 
+app.get('/', (request, response) => {
+	response.status(200);
+	response.sendFile(__dirname + "/homepage/index.html");
+});
+
 async function main() {
 	const dbHost = process.env.MONGO_URL;
-	const port = process.env.PORT || '4000';
+	const port = process.env.PORT || '443';
 
 	if (!dbHost) {
 		throw new Error('You must specify the MONGO_URL.');
