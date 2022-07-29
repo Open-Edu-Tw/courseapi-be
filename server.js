@@ -67,7 +67,7 @@ app.get('/', (request, response) => {
 
 async function main() {
 	const dbHost = process.env.MONGO_URL;
-	const port = process.env.PORT || '443';
+	const port = process.env.PORT || '4000';
 
 	if (!dbHost) {
 		throw new Error('You must specify the MONGO_URL.');
