@@ -4,8 +4,8 @@ WORKDIR /src
 
 ADD . /src
 
-RUN yarn
+RUN corepack enable && pnpm
 
 EXPOSE 4000
 
-ENTRYPOINT [ "yarn", "run", "server" ]
+ENTRYPOINT [ "pnpm", "run", "server" ]
