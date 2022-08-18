@@ -1,6 +1,7 @@
 import process from 'node:process';
 import dotenv from 'dotenv-defaults';
 import express from 'express';
+import cors from 'cors';
 
 // Import mongoose
 import mongoose from 'mongoose';
@@ -11,6 +12,8 @@ import Course from './models/course.js';
 dotenv.config();
 
 const app = express();
+
+app.use(cors())
 
 app.get('/course', async (request, response) => {
 	/**
