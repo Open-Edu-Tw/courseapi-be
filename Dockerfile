@@ -4,7 +4,7 @@ WORKDIR /src
 
 ADD . /src
 
-RUN corepack enable && pnpm
+RUN corepack enable && pnpm i
 
 EXPOSE 4000
 
