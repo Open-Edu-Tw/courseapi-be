@@ -2,6 +2,8 @@ import process from 'node:process';
 import dotenv from 'dotenv-defaults';
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 // Import mongoose
 import mongoose from 'mongoose';
@@ -64,6 +66,8 @@ app.get('/course/:id', async (request, response) => {
 });
 
 app.get('/', (request, response) => {
+	const __filename = fileURLToPath(import.meta.url);
+	const __dirname = path.dirname(__filename);
 	response.status(200);
 	response.sendFile(__dirname + "/homepage/index.html");
 });
