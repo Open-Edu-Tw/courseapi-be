@@ -8,7 +8,6 @@ const CourseSchema = new Schema({
 	description: String,
 	providerInstitution: String,
 	source: String,
-	keywords: Array,
 });
 const Course = mongoose.model('CourseSchema', CourseSchema, 'course');
 
