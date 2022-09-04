@@ -25,28 +25,16 @@ app.get('/course', async (request, response) => {
 
 	// 從 request.query 取出 query parameter，
 	// 然後建構不分大小寫的 Regex 的查詢請求。
-	const addRegexMatcher = (queryName) => {
+	const addMatcher = (queryName) => {
 		if (queryName) {
-			matchers[queryName] = request.query[queryName] ? {
+			matchers[queryName] = {
 				$regex: new RegExp(request.query[queryName], 'i'),
-			} : null;
-		}
-	};
-
-	// 如果 field 是 array 的話，那就直接找 query 有沒有在
-	// array 裡面就好：https://stackoverflow.com/a/18148872/12652912
-	const addArrayMatcher = (queryName) => {
-		if (queryName) {
-			matchers[queryName] = request.query[queryName] ?? null;
+			};
 		}
 	};
 
 	for (const queryName of ['name', 'url', 'description', 'source']) {
-		addRegexMatcher(queryName);
-	}
-
-	for (const queryName of ['instructor', 'keywords']) {
-		addArrayMatcher(queryName);
+		addMatcher(queryName);
 	}
 
 	const matchedResult = await Course.find(matchers);
