@@ -4,6 +4,7 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import _ from 'lodash'
 
 // Import mongoose
 import mongoose from 'mongoose';
@@ -18,34 +19,38 @@ const app = express();
 app.use(cors())
 
 app.get('/course', async (request, response) => {
-	/**
-	 * @type {{ [key: string]: { $regex: RegExp }}}
-	 */
-	const matchers = {};
+	try {
+		/**
+		 * @type {{ [key: string]: { $regex: RegExp }}}
+		 */
+		const matchers = {};
 
-	// 從 request.query 取出 query parameter，
-	// 然後建構不分大小寫的 Regex 的查詢請求。
-	const addMatcher = (queryName) => {
-		if (queryName) {
-			matchers[queryName] = {
-				$regex: new RegExp(request.query[queryName], 'i'),
-			};
+		// 從 request.query 取出 query parameter，
+		// 然後建構不分大小寫的 Regex 的查詢請求。
+		const addMatcher = (queryName) => {
+			if (queryName) {
+				var safeValue = _.escapeRegExp(request.query[queryName]);
+				matchers[queryName] = {
+					$regex: new RegExp(safeValue, 'i'),
+				};
+			}
+		};
+
+		for (const queryName of ['name', 'url', 'description', 'source']) {
+			addMatcher(queryName);
 		}
-	};
+		const matchedResult = await Course.find(matchers);
 
-	for (const queryName of ['name', 'url', 'description', 'source']) {
-		addMatcher(queryName);
+		if (matchedResult?.length > 0) {
+			response.status(200);
+		} else {
+			response.status(400);
+		}
+
+		response.send({data: matchedResult});
+	} catch (err) {
+		response.status(500);
 	}
-
-	const matchedResult = await Course.find(matchers);
-
-	if (matchedResult?.length > 0) {
-		response.status(200);
-	} else {
-		response.status(400);
-	}
-
-	response.send({data: matchedResult});
 });
 
 app.get('/course/:id', async (request, response) => {
